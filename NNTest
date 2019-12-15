@@ -1,0 +1,105 @@
+# This program uses Neural Networks to predict if a flower
+# is Red or Blue based on inputs (petal length and width).
+# It uses a learning loop to study the data, making note of
+# the inputs for each labelled item.
+
+# How this particular Neural Network architecture looks
+
+#     ○     Flower Type (1 output neuron)
+#    / \    weight1, weight2, bias (weighted connections)
+#   ○   ○   Petal Length, Petal Width (2 input nuerons)
+
+
+# Import numPy for maths functions
+import numpy as np
+
+# Variable for amount of iterations to run learning loop
+iterations = 100000
+
+# Starting data for flowers
+# Petal Length, Petal Width, Petal Colour (1 = Red, 0 = Blue)
+data = [[3, 1.5, 1],
+        [2, 1, 0],
+        [4, 1.5, 1],
+        [3, 1, 0],
+        [3.5, 0.5, 1],
+        [2, 0.5, 1],
+        [5.5, 1, 1],
+        [1, 1, 0]]
+
+mystery_flower = [4.5, 1]
+
+
+# Define the sigmoid function (returns number between 0 and 1)
+# This function is good for this problem as there are two possible outputs
+# The closer to 1, the more likely it is a red flower
+# The closer to 0, the more likely it is a blue flower
+def sigmoid(x):
+    return 1 / (1 + np.exp(-x))
+
+
+def sigmoid_derivative(x):
+    return sigmoid(x) * (1 - sigmoid(x))
+
+
+# Learning rate variable which controls how quickly the model is
+# adapting to the problem.
+learning_rate = 0.2
+
+# Get random synaptic weights and bias for first initialisation of model
+# randn gives a random number from the normal distribution
+weight1 = np.random.randn()
+weight2 = np.random.randn()
+bias = np.random.randn()
+
+# Training Loop
+# Begin with random weights and bias
+# Improve cost function to reduce error
+for i in range(iterations):
+
+    # Look at random data item
+    random_i = np.random.randint(len(data))
+    point = data[random_i]
+
+    # Neural Network defined as a function
+    z = ((point[0] * weight1) + (point[1] * weight2)) + bias
+    prediction = sigmoid(z)
+
+    # Target is the flower colour we want (0 or 1)
+    target = point[2]
+
+    # Get the cost error
+    cost = np.square(prediction - target)
+
+    dcost_prediction = 2 * (prediction - target)
+
+    dprediction_dz = sigmoid_derivative(z)
+
+    dz_dweight1 = point[0]
+    dz_dweight2 = point[1]
+    dz_dbias = 1
+
+    dcost_dz = dcost_prediction * dprediction_dz
+
+    dcost_dweight1 = dcost_dz * dz_dweight1
+    dcost_dweight2 = dcost_dz * dz_dweight2
+    dcost_dbias = dcost_dz * dz_dbias
+
+    # Update weights and bias to minimise cost error and improve accuracy
+    weight1 = weight1 - (learning_rate * dcost_dweight1)
+    weight2 = weight2 - (learning_rate * dcost_dweight2)
+    bias = bias - (learning_rate * dcost_dbias)
+
+# View list of flowers and colour that the Neural Network has predicted
+for i in range(len(data)):
+    point = data[i]
+    print(point)
+
+    z = ((point[0] * weight1) + (point[1] * weight2)) + bias
+    prediction = sigmoid(z)
+
+    # Display data item and the predicted colour
+    if prediction < 0.5:
+        print("Prediction: {}".format(prediction) + " (Blue)")
+    else:
+        print("Prediction: {}".format(prediction) + " (Red)")
