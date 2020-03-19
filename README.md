@@ -1,2 +1,2 @@
-# InstreffectID
-Instrument and Sound Effect identification software using Machine Learning
+# InstrumentID
+Musical Instrument Classification Using Convolutional Neural Network
