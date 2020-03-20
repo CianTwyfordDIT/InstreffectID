@@ -21,12 +21,12 @@ mfccs={}
 
 
 # Read in titles for labelled data
-df = pd.read_csv(path+'/instrument_titles.csv')
+df = pd.read_csv(path+'/Instrument_Titles.csv')
 df.set_index('fname', inplace=True)
 
 # Index now holds file name column
 for f in df.index:
-    rate, signal = wavfile.read(path+'/instrument_wav_files/'+f)  # Read in wav files
+    rate, signal = wavfile.read(path+'/Instrument_Audio/'+f)  # Read in wav files
     df.at[f, 'length'] = signal.shape[0]/rate  # Access individual elements, get length of each signal in seconds
 
 
@@ -60,7 +60,7 @@ df.reset_index(inplace=True)
 # Get one example file from each instrument class
 for _class in instrument_classes:
     wavFile = df[df.label == _class].iloc[0, 0]  # Get first file of each class with iloc
-    audioSignal, samplingRate = librosa.load(path+'/instrument_wav_files/'+wavFile, sr=44100)  # Load in wave files and set their sampling rate
+    audioSignal, samplingRate = librosa.load(path+'/Instrument_Audio/'+wavFile, sr=44100)  # Load in wave files and set their sampling rate
     signalMask = createMask(audioSignal, samplingRate, 0.0005)  # Pass signal to function and set threshold to create mask
     audioSignal = audioSignal[signalMask]
     audioSignals[_class] = audioSignal  # Store signal read in into dictionary
@@ -75,3 +75,12 @@ for _class in instrument_classes:
     melFreq = mfcc(audioSignal[:samplingRate], samplingRate, numcep=13, nfilt=26,
                    nfft=1103).T  # Get one second of signal and transpose the returning matrix
     mfccs[_class] = melFreq  # Store into dictionary
+
+
+# Store cleaned data into new folder 'clean' to be used by Neural Network model
+if len(os.listdir(path+'/Clean_Audio')) == 0:  # Check to see if directory is populated
+    print('Storing Clean Samples into Clean_Audio...')
+    for file in tqdm(df.fname):  # Populate folder with processed data
+        audioSignal, samplingRate = librosa.load(path+'/Instrument_Audio/'+file, sr=16000)  # Downsample signals with less higher frequencies to 16000
+        signalMask = createMask(audioSignal, samplingRate, 0.0005)  # Mask each file
+        wavfile.write(filename=path+'/Clean_Audio/'+file, rate=samplingRate, data=audioSignal[signalMask])  # Store file in Clean_Audio folder
