@@ -55,3 +55,8 @@ for _class in instrument_classes:
     fbank = logfbank(audioSignal[:samplingRate], samplingRate, nfilt=26,
                      nfft=1103).T  # Get one second of signal and transpose the returning matrix
     filterBank[_class] = fbank  # Store into dictionary
+
+    # Calculate MFCC values
+    melFreq = mfcc(audioSignal[:samplingRate], samplingRate, numcep=13, nfilt=26,
+                   nfft=1103).T  # Get one second of signal and transpose the returning matrix
+    mfccs[_class] = melFreq  # Store into dictionary
