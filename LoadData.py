@@ -50,3 +50,8 @@ for _class in instrument_classes:
     audioSignal, samplingRate = librosa.load(path+'/instrument_wav_files/'+wavFile, sr=44100)  # Load in wave files and set their sampling rate
     audioSignals[_class] = audioSignal  # Store signal read in into dictionary
     fourierTrans[_class] = calculate_fourierTrans(audioSignal, samplingRate)  # Store returned signal from fft into dictionary
+
+    # Create Filter Banks
+    fbank = logfbank(audioSignal[:samplingRate], samplingRate, nfilt=26,
+                     nfft=1103).T  # Get one second of signal and transpose the returning matrix
+    filterBank[_class] = fbank  # Store into dictionary
