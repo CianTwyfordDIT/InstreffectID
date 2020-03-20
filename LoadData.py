@@ -24,6 +24,11 @@ mfccs={}
 df = pd.read_csv(path+'/instrument_titles.csv')
 df.set_index('fname', inplace=True)
 
+# Index now holds file name column
+for f in df.index:
+    rate, signal = wavfile.read(path+'/instrument_wav_files/'+f)  # Read in wav files
+    df.at[f, 'length'] = signal.shape[0]/rate  # Access individual elements, get length of each signal in seconds
+
 
 # Calculate the Fast Fourier Transform
 def calculate_fourierTrans(signal, rate):
@@ -33,10 +38,18 @@ def calculate_fourierTrans(signal, rate):
     return absSignal, frequency  # Return magnitude and frequency
 
 
-# Index now holds file name column
-for f in df.index:
-    rate, signal = wavfile.read(path+'/instrument_wav_files/'+f)  # Read in wav files
-    df.at[f, 'length'] = signal.shape[0]/rate  # Access individual elements, get length of each signal in seconds
+# Function to remove dead space below specified threshold in audio samples (noise floor detection)
+# Signal, collection rate and threshold passed in
+def createMask(signal, rate, signalThreshold):
+    sigMask = []
+    signal = pd.Series(signal).apply(np.abs)
+    signal_mean = signal.rolling(window=int(rate/10), min_periods=1, center=True).mean()
+    for mean in signal_mean:
+        if mean > signalThreshold:
+            sigMask.append(True)
+        else:
+            sigMask.append(False)
+    return sigMask
 
 
 # Create set of instrument classes
@@ -48,13 +61,15 @@ df.reset_index(inplace=True)
 for _class in instrument_classes:
     wavFile = df[df.label == _class].iloc[0, 0]  # Get first file of each class with iloc
     audioSignal, samplingRate = librosa.load(path+'/instrument_wav_files/'+wavFile, sr=44100)  # Load in wave files and set their sampling rate
+    signalMask = createMask(audioSignal, samplingRate, 0.0005)  # Pass signal to function and set threshold to create mask
+    audioSignal = audioSignal[signalMask]
     audioSignals[_class] = audioSignal  # Store signal read in into dictionary
     fourierTrans[_class] = calculate_fourierTrans(audioSignal, samplingRate)  # Store returned signal from fft into dictionary
 
     # Create Filter Banks
-    fbank = logfbank(audioSignal[:samplingRate], samplingRate, nfilt=26,
+    fBank = logfbank(audioSignal[:samplingRate], samplingRate, nfilt=26,
                      nfft=1103).T  # Get one second of signal and transpose the returning matrix
-    filterBank[_class] = fbank  # Store into dictionary
+    filterBank[_class] = fBank  # Store into dictionary
 
     # Calculate MFCC values
     melFreq = mfcc(audioSignal[:samplingRate], samplingRate, numcep=13, nfilt=26,
