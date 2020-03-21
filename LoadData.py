@@ -25,13 +25,13 @@ df = pd.read_csv(path+'/Instrument_Titles.csv')
 df.set_index('fname', inplace=True)
 
 # Index now holds file name column
-for f in df.index:
-    rate, signal = wavfile.read(path+'/Instrument_Audio/'+f)  # Read in wav files
-    df.at[f, 'length'] = signal.shape[0]/rate  # Access individual elements, get length of each signal in seconds
+for file in df.index:
+    samplingRate, audioSignal = wavfile.read(path+'/Instrument_Audio/'+file)  # Read in wav files
+    df.at[file, 'length'] = audioSignal.shape[0]/samplingRate  # Access individual elements, get length of each signal in seconds
 
 
 # Calculate the Fast Fourier Transform
-def calculate_fourierTrans(signal, rate):
+def calculateFourierTrans(signal, rate):
     signalLength = len(signal)  # Get length of signal
     frequency = np.fft.rfftfreq(signalLength, d=1/rate)  # Length and time that passes between each sample
     absSignal = abs(np.fft.rfft(signal)/signalLength)  # Get absolute value for magnitude
@@ -43,8 +43,8 @@ def calculate_fourierTrans(signal, rate):
 def createMask(signal, rate, signalThreshold):
     sigMask = []
     signal = pd.Series(signal).apply(np.abs)
-    signal_mean = signal.rolling(window=int(rate/10), min_periods=1, center=True).mean()
-    for mean in signal_mean:
+    signalMean = signal.rolling(window=int(rate/10), min_periods=1, center=True).mean()
+    for mean in signalMean:
         if mean > signalThreshold:
             sigMask.append(True)
         else:
@@ -53,18 +53,18 @@ def createMask(signal, rate, signalThreshold):
 
 
 # Create set of instrument classes
-instrument_classes = list(np.unique(df.label))
+instrumentClasses = list(np.unique(df.label))
 df.reset_index(inplace=True)
 
 
 # Get one example file from each instrument class
-for _class in instrument_classes:
+for _class in instrumentClasses:
     wavFile = df[df.label == _class].iloc[0, 0]  # Get first file of each class with iloc
     audioSignal, samplingRate = librosa.load(path+'/Instrument_Audio/'+wavFile, sr=44100)  # Load in wave files and set their sampling rate
     signalMask = createMask(audioSignal, samplingRate, 0.0005)  # Pass signal to function and set threshold to create mask
     audioSignal = audioSignal[signalMask]
     audioSignals[_class] = audioSignal  # Store signal read in into dictionary
-    fourierTrans[_class] = calculate_fourierTrans(audioSignal, samplingRate)  # Store returned signal from fft into dictionary
+    fourierTrans[_class] = calculateFourierTrans(audioSignal, samplingRate)  # Store returned signal from fft into dictionary
 
     # Create Filter Banks
     fBank = logfbank(audioSignal[:samplingRate], samplingRate, nfilt=26,
