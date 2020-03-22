@@ -6,6 +6,13 @@ from tqdm import tqdm  # Library to graph any iterable in python eg. making prog
 from python_speech_features import mfcc   # Audio library for MFCC features
 # Keras Imports
 from keras.utils import to_categorical  # Use for categorical cross entropy
+from keras.layers import Conv2D, MaxPool2D, Flatten, LSTM
+from keras.layers import Dropout, Dense, TimeDistributed
+from keras.models import Sequential  # Model for linear stacking of layers
+from keras.callbacks import ModelCheckpoint  # Saving model from Keras to load up later and make predictions
+
+from sklearn.utils.class_weight import compute_class_weight  # Estimate class weights for unbalanced data
+import pickle  # Store binary files
 
 # Create path variable
 path = 'C:/Users/ciant/OneDrive/Documents/Year4/FinalYearProject/InstrumentID'
@@ -52,6 +59,35 @@ def generateFeatures():
     return featX, featY  # Return feature lists
 
 
+# Convolutional neural network model
+def ConvNeuralNetworkModel():
+    convModel = Sequential()  # Linear stack of layers
+    # Add convolutional layers to create a covolutional kernel
+    # and learn new features about data
+    # Increase number of filters for each layer to get more specific as
+    # data gets convolved down through each layer
+    convModel.add(Conv2D(16, (3, 3), activation='relu', strides=(1, 1), padding='same', input_shape=inputShape))  # Specify input shape for first layer
+    convModel.add(Conv2D(32, (3, 3), activation='relu', strides=(1, 1), padding='same'))
+    convModel.add(Conv2D(64, (3, 3), activation='relu', strides=(1, 1), padding='same'))
+    convModel.add(Conv2D(128, (3, 3), activation='relu', strides=(1, 1), padding='same'))
+
+    # Add pooling layer
+    convModel.add(MaxPool2D((2, 2)))
+    convModel.add(Dropout(0, 5))
+    convModel.add(Flatten())  # Flatten output of pooling to one dimension
+
+    # Add dense layers - gradually pull down layers
+    convModel.add(Dense(128, activation='relu'))
+    convModel.add(Dense(64, activation='relu'))
+    convModel.add(Dense(10, activation='softmax'))
+
+    convModel.summary()  # Print summary of the model to console
+
+    convModel.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['acc'])  # Compile model with all layers added
+
+    return convModel  # Return the model
+
+
 # Read in titles for labelled data
 df = pd.read_csv(path+'/Instrument_Titles.csv')
 df.set_index('fname', inplace=True)
@@ -78,3 +114,20 @@ randSamples = np.random.choice(classDistrib.index, p=probDistrib)
 
 Configuration = Configuration(mode='conv')  # Set configuration from class
 featX, featY = generateFeatures()  # Build feature set featX and featY from random sampling
+mapFeatY = np.argmax(featY, axis=1)  # Map to original class columns
+inputShape = (featX.shape[1], featX.shape[2], 1)  # Define input shape for convolutional neural network
+convModel = ConvNeuralNetworkModel()
+
+# Estimate class weights for unbalanced data to reduce bias in neural network
+classWeight = compute_class_weight('balanced', np.unique(mapFeatY), mapFeatY)
+
+# Saving model from Keras to load up later and make predictions
+# Create checkpoint for the model
+modelCheckpoint = ModelCheckpoint(Configuration.modelPath, monitor='val_acc', verbose=1, mode='max',
+                                  save_best_only=True, save_weights_only=False, period=1)
+# Take featX and featY matrices to randomly create batches of the data over 10 epochs (iterations)
+convModel.fit(featX, featY, epochs=10, batch_size=32, shuffle=True,
+              class_weight=classWeight, validation_split=0.1,
+              callbacks=[modelCheckpoint])
+# Save model to specified path
+convModel.save(Configuration.modelPath)
