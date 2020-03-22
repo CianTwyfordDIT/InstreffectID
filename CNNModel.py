@@ -13,14 +13,37 @@ from keras.callbacks import ModelCheckpoint  # Saving model from Keras to load u
 
 from sklearn.utils.class_weight import compute_class_weight  # Estimate class weights for unbalanced data
 import pickle  # Store binary files
+import os  # Library to interact with operating system
 
 # Create path variable
 path = 'C:/Users/ciant/OneDrive/Documents/Year4/FinalYearProject/InstrumentID'
 
 
+# Look in Pickle file and see if there is an existing file
+def checkPickle():
+    if os.path.isfile(Configuration.picklePath):  # If Pickle file exists
+
+        print('Loading Existing Data For Convolutional Neural Network Model')
+
+        with open(Configuration.picklePath, 'rb') as handle:  # Read bytes
+            pickleFile = pickle.load(handle)  # Load Pickle file
+
+            return pickleFile  # Return existing Pickle file
+    else:
+        return None  # Return nothing if no Pickle file exists
+
+
 # Function to create featX matrix and featY matrix to hold all small
 # samples of audio with their corresponding classes
 def generateFeatures():
+
+    # Before generating features, check to see if a Pickle binary file
+    # already exists storing previously generated audio features
+    pickleFile = checkPickle()  # Return Pickle file or None
+
+    if pickleFile:  # If file exists in variable
+        return pickleFile.data[0], pickleFile.data[1]  # Return existing tuple
+
     # Create lists to be converted to numpy array later
     featX = []
     featY = []
@@ -55,6 +78,11 @@ def generateFeatures():
     featX = (featX - minimum) / (maximum - minimum)  # Normalise featX
     featX = featX.reshape(featX.shape[0], featX.shape[1], featX.shape[2], 1)  # Change shape of X for convolutional neural network without changing data
     featY = to_categorical(featY, num_classes=10)  # Hot encode y for categorical cross entropy
+    Configuration.data = (featX, featY)  # Store tuple in Pickle file
+
+    # After generating features, save object as Pickle file
+    with open(Configuration.picklePath, 'wb') as pickleHandle:  # Write bytes to Pickle
+        pickle.dump(Configuration, pickleHandle, protocol=2)
 
     return featX, featY  # Return feature lists
 
