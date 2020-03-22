@@ -1,13 +1,23 @@
+# This file takes in samples from the Clean_Audio directory,
+# generates MFCCs from these audio samples and feeds
+# them into a convolutional neural network. This model is
+# trained on these audio features over 10 epochs. The features
+# are stored in a Pickle binary file to remove the necessity of
+# generating them every time they are needed for the neural network.
+# The trained model is saved into a model file to be used when
+# predicting classification.
+
+
 from scipy.io import wavfile  # Library to read in and load .wav files
 import pandas as pd  # Library to create and manipulate data frames
 import numpy as np  # Library for array computing
 from Configuration import Configuration  # Contains Config class
 from tqdm import tqdm  # Library to graph any iterable in python eg. making progress bar
 from python_speech_features import mfcc   # Audio library for MFCC features
-# Keras Imports
-from keras.utils import to_categorical  # Use for categorical cross entropy
+# Keras library for convolutional layer and other functions
 from keras.layers import Conv2D, MaxPool2D, Flatten, LSTM
 from keras.layers import Dropout, Dense, TimeDistributed
+from keras.utils import to_categorical  # Use for categorical cross entropy
 from keras.models import Sequential  # Model for linear stacking of layers
 from keras.callbacks import ModelCheckpoint  # Saving model from Keras to load up later and make predictions
 
