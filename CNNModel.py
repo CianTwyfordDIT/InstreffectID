@@ -11,9 +11,9 @@
 from scipy.io import wavfile  # Library to read in and load .wav files
 import pandas as pd  # Library to create and manipulate data frames
 import numpy as np  # Library for array computing
-from Configuration import Configuration  # Contains Config class
+from Configuration import Configuration  # Contains Configuration class
 from tqdm import tqdm  # Library to graph any iterable in python eg. making progress bar
-from python_speech_features import mfcc   # Audio library for MFCC features
+from python_speech_features import mfcc  # Audio library for MFCC features
 # Keras library for convolutional layer and other functions
 from keras.layers import Conv2D, MaxPool2D, Flatten, LSTM
 from keras.layers import Dropout, Dense, TimeDistributed
@@ -72,8 +72,8 @@ def generateFeatures():
 
         #  Create one sample to go into featX matrix by calculating MFCCs
         sampleX = mfcc(audioSample, samplingRate,
-                       numcep=Configuration.nfeat, nfilt=Configuration.nfilt,
-                       nfft=Configuration.nfft)
+                       numcep=Configuration.numFeat, nfilt=Configuration.numFilt,
+                       nfft=Configuration.numFft)
 
         minimum = min(np.amin(sampleX), minimum)  # Update minimum
         maximum = max(np.amax(sampleX), maximum)  # Update maximum
@@ -86,8 +86,8 @@ def generateFeatures():
 
     featX, featY = np.array(featX), np.array(featY)  # Convert lists to arrays
     featX = (featX - minimum) / (maximum - minimum)  # Normalise featX
-    featX = featX.reshape(featX.shape[0], featX.shape[1], featX.shape[2], 1)  # Change shape of X for convolutional neural network without changing data
-    featY = to_categorical(featY, num_classes=10)  # Hot encode y for categorical cross entropy
+    featX = featX.reshape(featX.shape[0], featX.shape[1], featX.shape[2], 1)  # Change shape of featX for convolutional neural network without changing data
+    featY = to_categorical(featY, num_classes=10)  # Hot encode featY for categorical cross entropy
     Configuration.data = (featX, featY)  # Store tuple in Pickle file
 
     # After generating features, save object as Pickle file

@@ -1,3 +1,7 @@
+# This file specifies the configuration variables
+# needed for various functions in the application.
+
+
 import os
 
 
@@ -6,12 +10,12 @@ import os
 class Configuration:
     # Number of triangular filters, number of MFCC features, length of signal to calculate
     # the Fast Fourier Transform and the sampling rate
-    def __init__(self, mode='conv', nfilt=26, nfeat=13, nfft=512, samplingRate=16000):
+    def __init__(self, mode='conv', numFilt=26, numFeat=13, numFft=512, samplingRate=16000):
         self.mode = mode
-        self.nfilt = nfilt
-        self.nfeat = nfeat
-        self.nfft = nfft
+        self.numFilt = numFilt
+        self.numFeat = numFeat
+        self.numFft = numFft
         self.samplingRate = samplingRate
         self.sampleStep = int(samplingRate/10)  # Return 1/10 of a second
-        self.modelPath = os.path.join('SavedModel', mode+'.model')
-        self.picklePath = os.path.join('SavedPickle', mode+'.p')
+        self.modelPath = os.path.join('Saved_Model', mode+'.model')
+        self.picklePath = os.path.join('Saved_Pickle', mode+'.p')
