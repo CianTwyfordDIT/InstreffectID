@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.io.File;
 import java.io.IOException;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -20,7 +21,7 @@ import okhttp3.Response;
 public class MainActivity extends AppCompatActivity
 {
 
-    TextView pathText;
+    TextView fileName;
     Button uploadFile;
     Intent fileIntent;
 
@@ -30,7 +31,7 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        pathText = (TextView) findViewById(R.id.pathText);
+        fileName = (TextView) findViewById(R.id.fileName);
         uploadFile = (Button) findViewById(R.id.uploadFile);
 
         uploadFile.setOnClickListener(new View.OnClickListener()
@@ -39,7 +40,7 @@ public class MainActivity extends AppCompatActivity
             public void onClick(View v)
             {
                 fileIntent = new Intent(Intent.ACTION_GET_CONTENT);
-                fileIntent.setType("*/*");
+                fileIntent.setType("audio/*");
                 startActivityForResult(fileIntent, 10);
 
             }
@@ -124,7 +125,8 @@ public class MainActivity extends AppCompatActivity
                 if (resultCode == RESULT_OK)
                 {
                     String path = data.getData().getPath();
-                    pathText.setText(path);
+                    String file = new File(path).getName();
+                    fileName.setText(file);
                 }
 
                 break;
