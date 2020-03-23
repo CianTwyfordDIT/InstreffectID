@@ -1,2 +1,2 @@
 # InstrumentID
-Musical Instrument Classification Using Convolutional Neural Network
+Instrument Classification Mobile App Using Convolutional Neural Network
