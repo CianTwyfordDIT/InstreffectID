@@ -20,8 +20,6 @@ import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity
 {
-
-    TextView fileName;
     Button uploadFile;
     Intent fileIntent;
 
@@ -31,7 +29,6 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        fileName = (TextView) findViewById(R.id.fileName);
         uploadFile = (Button) findViewById(R.id.uploadFile);
 
         uploadFile.setOnClickListener(new View.OnClickListener()
@@ -126,7 +123,9 @@ public class MainActivity extends AppCompatActivity
                 {
                     String path = data.getData().getPath();
                     String file = new File(path).getName();
-                    fileName.setText(file);
+                    Intent predictionIntent = new Intent(MainActivity.this, Prediction.class);
+                    predictionIntent.putExtra("key", file); //Optional parameters
+                    startActivity(predictionIntent);
                 }
 
                 break;
