@@ -1,8 +1,12 @@
 package android_app.instrumentid;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.support.annotation.Nullable;
+import android.content.pm.PackageManager;
+import android.os.Build;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -35,6 +39,19 @@ public class MainActivity extends AppCompatActivity
 
         uploadFile = (Button) findViewById(R.id.uploadFile);
 
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+        {
+            if(ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 100);
+
+                return;
+            }
+        }
+        enableButton();
+    }
+
+    private void enableButton()
+    {
         uploadFile.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -46,6 +63,22 @@ public class MainActivity extends AppCompatActivity
 
             }
         });
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
+    {
+        if(requestCode == 100 && (grantResults[0] == PackageManager.PERMISSION_GRANTED))
+        {
+            enableButton();
+        }
+        else
+        {
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+            {
+                    requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 100);
+            }
+        }
     }
 
     String getUploadURL()
@@ -138,13 +171,33 @@ public class MainActivity extends AppCompatActivity
     {
         if (requestCode == 10 && resultCode == RESULT_OK)
         {
-            String postURL = getUploadURL();
-            String postText="";
+            String path = data.getData().getPath();
 
-            MediaType mediaType = MediaType.parse("text/plain; charset=utf-8");
-            RequestBody requestBody = RequestBody.create(mediaType, postText);
+            System.out.println(path);
+
+            File file = new File("/sdcard/InstrumentID/Data/WavFiles/00353774.wav");
+            String contentType = getMimeType(path);
+
+            RequestBody fileBody = RequestBody.create(MediaType.parse(contentType), file);
+
+            String fileName = file.getName();
+
+            RequestBody requestBody = new MultipartBody.Builder()
+                    .setType(MultipartBody.FORM)
+                    .addFormDataPart("type", contentType)
+                    .addFormDataPart("uploadFile", fileName, fileBody)
+                    .build();
+
+            String postURL = getUploadURL();
 
             postRequest(postURL, requestBody);
         }
+    }
+
+    private String getMimeType(String path)
+    {
+        String extension = MimeTypeMap.getFileExtensionFromUrl(path);
+
+        return MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
     }
 }

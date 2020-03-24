@@ -17,8 +17,14 @@ def handleRequest():
 
 @app.route('/uploadFile', methods=['GET', 'POST'])
 def uploadFile():
-    response = "File Uploaded Successfully"
-
+    if request.method =='POST':
+        file = request.files['uploadFile']
+        if file:
+            filePath = path+secure_filename(file.filename)
+            file.save(filePath)
+            response = "File Uploaded Successfully"
+        else:
+            response = "File Upload Failed"
     return response
 
 
