@@ -1,5 +1,6 @@
 from flask import Flask, request
 from werkzeug.utils import secure_filename
+import os
 
 # Create path variable
 path = 'C:/Users/ciant/OneDrive/Documents/Year4/FinalYearProject/InstrumentID/Predict_Audio/'
@@ -7,15 +8,18 @@ path = 'C:/Users/ciant/OneDrive/Documents/Year4/FinalYearProject/InstrumentID/Pr
 app = Flask(__name__)
 
 
+@app.route('/', methods=['GET', 'POST'])
+def handleRequest():
+    response = "Connected To Flask Server Successfully"
+
+    return response
+
+
 @app.route('/uploadFile', methods=['GET', 'POST'])
 def uploadFile():
-    if request.method == 'PUT':
-        file = request.files['file']
-        filePath = path+secure_filename(file.filename)
-        file.save(filePath)
-        response = "Success"
+    response = "File Uploaded Successfully"
 
-        return response
+    return response
 
 
 if __name__ == "__main__":
