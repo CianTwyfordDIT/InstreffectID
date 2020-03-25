@@ -4,6 +4,8 @@
 
 
 import os  # Library to interact with operating system
+import time
+
 import pandas as pd  # Library to create and manipulate data frames
 import numpy as np  # Library for array computing
 import pickle  # Store binary files
@@ -62,9 +64,16 @@ with open(picklePath, 'rb') as pickleHandle:
 
 convModel = load_model(Configuration.modelPath)  # Load saved model into model
 
-prediction = predict(path+'/Predict_Audio')  # Call predict function with directory of file to be analysed
+fullPath = path+'/Predict_Audio'
 
-# Print Result To Console
-print()
-print('Predicted Classification of '+file+':')
-print(prediction)
+
+try:
+    prediction = predict(fullPath)  # Call predict function with directory of file to be analysed
+
+    # Print Result To Console
+    print()
+    print('Predicted Classification of ' + file + ':')
+    print(prediction)
+except:
+    print()
+    print("No File Found in Directory")

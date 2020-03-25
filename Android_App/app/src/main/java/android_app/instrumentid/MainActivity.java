@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -13,6 +14,7 @@ import android.view.View;
 import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
@@ -81,6 +83,14 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    String getPredictionURL()
+    {
+        String IPAddress = "192.168.0.25";
+        String port = "5000";
+        String postURL = "http://"+IPAddress+":"+port+"/"+"prediction";
+
+        return postURL;
+    }
     String getUploadURL()
     {
         String IPAddress = "192.168.0.25";
@@ -175,14 +185,13 @@ public class MainActivity extends AppCompatActivity
         {
             String path = data.getData().getPath();
 
-            System.out.println(path);
-
-            File file = new File(path);
+            File file = new File("/sdcard/Music/0356dec7.wav");
             String contentType = getMimeType(path);
+            String fileName = file.getName();
+
+            Toast.makeText(this, "File "+fileName+ " selected", Toast.LENGTH_LONG).show();
 
             RequestBody fileBody = RequestBody.create(MediaType.parse(contentType), file);
-
-            String fileName = file.getName();
 
             RequestBody requestBody = new MultipartBody.Builder()
                     .setType(MultipartBody.FORM)
