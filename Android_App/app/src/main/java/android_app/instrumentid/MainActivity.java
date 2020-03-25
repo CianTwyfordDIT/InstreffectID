@@ -137,6 +137,7 @@ public class MainActivity extends AppCompatActivity
                     @Override
                     public void run()
                     {
+                        //uploadFile.setEnabled(false);
                         TextView responseText = findViewById(R.id.response);
                         responseText.setText("Failed To Connect To Flask Server");
                     }
@@ -154,6 +155,7 @@ public class MainActivity extends AppCompatActivity
                         TextView responseText = findViewById(R.id.response);
                         try
                         {
+                            uploadFile.setEnabled(true);
                             responseText.setText(response.body().string());
                         }
                         catch (IOException e)
@@ -175,7 +177,7 @@ public class MainActivity extends AppCompatActivity
 
             System.out.println(path);
 
-            File file = new File("/sdcard/InstrumentID/Data/WavFiles/00353774.wav");
+            File file = new File(path);
             String contentType = getMimeType(path);
 
             RequestBody fileBody = RequestBody.create(MediaType.parse(contentType), file);
