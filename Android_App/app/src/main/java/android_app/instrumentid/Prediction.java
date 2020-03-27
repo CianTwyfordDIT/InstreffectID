@@ -14,10 +14,15 @@ public class Prediction extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.prediction_screen);
 
-        TextView fileName = (TextView) findViewById(R.id.fileName);
+        getPrediction();
+    }
 
+    void getPrediction()
+    {
         Intent intent = getIntent();
-        String fileNameString = intent.getStringExtra("key");
-        fileName.setText(fileNameString);
+        String response = intent.getStringExtra("key");
+
+        TextView predictionText = findViewById(R.id.prediction);
+        predictionText.setText(response);
     }
 }

@@ -3,6 +3,6 @@
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
-    <color name="colorOffline">#A80808</color>
-    <color name="colorOnline">#1F5F03</color>
+    <color name="colorOffline">#850B0B</color>
+    <color name="colorOnline">#44B314</color>
 </resources>

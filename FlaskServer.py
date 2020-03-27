@@ -11,7 +11,7 @@ app = Flask(__name__)
 
 @app.route('/', methods=['GET', 'POST'])
 def handleRequest():
-    response = "Connected To Flask Server Successfully"
+    response = "Connected To Server"
 
     return response
 

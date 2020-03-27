@@ -4,13 +4,8 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
-import android.graphics.drawable.ShapeDrawable;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -146,7 +141,7 @@ public class MainActivity extends AppCompatActivity
                         TextView responseText = findViewById(R.id.response);
                         ImageView serverStatus = (ImageView) findViewById(R.id.serverStatus);
                         serverStatus.setImageResource(R.drawable.server_status_offline);
-                        responseText.setText("Failed To Connect To Flask Server");
+                        responseText.setText("Failed To Connect To Server");
                         uploadFile.setEnabled(false);
                         serverConnection();
                     }
@@ -184,6 +179,7 @@ public class MainActivity extends AppCompatActivity
     {
         TextView responseText = findViewById(R.id.response);
         responseText.setText("Uploading File To Server...");
+        uploadFile.setEnabled(false);
 
         OkHttpClient client = new OkHttpClient();
 
@@ -224,15 +220,21 @@ public class MainActivity extends AppCompatActivity
                     @Override
                     public void run()
                     {
-                        TextView responseText = findViewById(R.id.response);
+                        uploadFile.setEnabled(true);
                         try
                         {
-                            responseText.setText(response.body().string());
+                            String prediction = response.body().string();
+
+                            Intent predictionIntent = new Intent(MainActivity.this, Prediction.class);
+                            predictionIntent.putExtra("key", prediction);
+                            MainActivity.this.startActivity(predictionIntent);
+                            serverConnection();
                         }
                         catch (IOException e)
                         {
                             e.printStackTrace();
                         }
+
                     }
                 });
             }
