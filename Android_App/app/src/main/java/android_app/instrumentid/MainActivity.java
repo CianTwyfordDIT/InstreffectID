@@ -4,15 +4,19 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.os.Build;
-import android.os.Environment;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.ShapeDrawable;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.webkit.MimeTypeMap;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,8 +33,12 @@ import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity
 {
+    String serverIP = "192.168.0.25";
+    String serverPort = "5000";
+
     Button uploadFile;
     Intent fileIntent;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -39,15 +47,13 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         serverConnection();
 
-        uploadFile = (Button) findViewById(R.id.uploadFile);
+        uploadFile = findViewById(R.id.uploadFile);
 
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
         {
-            if(ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 100);
+            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 100);
 
-                return;
-            }
+            return;
         }
         enableButton();
     }
@@ -76,26 +82,23 @@ public class MainActivity extends AppCompatActivity
         }
         else
         {
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-            {
-                    requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 100);
-            }
+            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 100);
         }
     }
 
     String getUploadURL()
     {
-        String IPAddress = "192.168.0.25";
-        String port = "5000";
+        String IPAddress = serverIP;
+        String port = serverPort;
         String postURL = "http://"+IPAddress+":"+port+"/"+"uploadFile";
 
         return postURL;
     }
 
-    String getURL()
+    String getConnectionURL()
     {
-        String IPAddress = "192.168.0.25";
-        String port = "5000";
+        String IPAddress = serverIP;
+        String port = serverPort;
         String postURL = "http://"+IPAddress+":"+port+"/";
 
         return postURL;
@@ -103,16 +106,16 @@ public class MainActivity extends AppCompatActivity
 
     void serverConnection()
     {
-        String postURL = getURL();
+        String postURL = getConnectionURL();
         String postText="";
 
         MediaType mediaType = MediaType.parse("text/plain; charset=utf-8");
         RequestBody post_Text = RequestBody.create(mediaType, postText);
 
-        postRequest(postURL, post_Text);
+        postConnectionRequest(postURL, post_Text);
     }
 
-    void postRequest(String postURL, RequestBody requestBody)
+    void postConnectionRequest(String postURL, RequestBody requestBody)
     {
 
         OkHttpClient client = new OkHttpClient();
@@ -142,6 +145,7 @@ public class MainActivity extends AppCompatActivity
                         //uploadFile.setEnabled(false);
                         TextView responseText = findViewById(R.id.response);
                         responseText.setText("Failed To Connect To Flask Server");
+                        uploadFile.setEnabled(false);
                     }
                 });
             }
@@ -157,7 +161,67 @@ public class MainActivity extends AppCompatActivity
                         TextView responseText = findViewById(R.id.response);
                         try
                         {
+                            ImageView serverStatus = (ImageView) findViewById(R.id.serverStatus);
+                            serverStatus.setImageResource(R.drawable.server_status_online);
+
                             uploadFile.setEnabled(true);
+                            responseText.setText(response.body().string());
+                        }
+                        catch (IOException e)
+                        {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    void postPredictionRequest(String postURL, RequestBody requestBody)
+    {
+
+        OkHttpClient client = new OkHttpClient();
+
+        Request request = new Request.Builder()
+                .url(postURL)
+                .post(requestBody)
+                .build();
+
+        client.newCall(request).enqueue(new Callback()
+        {
+            @Override
+            public void onFailure(Call call, IOException e)
+            {
+
+                // Cancel the post on failure.
+                call.cancel();
+
+                e.printStackTrace();
+
+                runOnUiThread(new Runnable()
+                {
+                    @SuppressLint("SetTextI18n")
+                    @Override
+                    public void run()
+                    {
+                        //uploadFile.setEnabled(false);
+                        TextView responseText = findViewById(R.id.response);
+                        responseText.setText("File Failed To Upload");
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(Call call, final Response response)
+            {
+                runOnUiThread(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        TextView responseText = findViewById(R.id.response);
+                        try
+                        {
                             responseText.setText(response.body().string());
                         }
                         catch (IOException e)
@@ -194,7 +258,7 @@ public class MainActivity extends AppCompatActivity
 
             String postURL = getUploadURL();
 
-            postRequest(postURL, requestBody);
+            postPredictionRequest(postURL, requestBody);
         }
     }
 

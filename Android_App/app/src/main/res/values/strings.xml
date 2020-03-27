@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">InstrumentID</string>
+    <string name="Upload_Button">Upload File</string>
+    <string name="Server_Status">Waiting For Connection To Server..</string>
 </resources>
