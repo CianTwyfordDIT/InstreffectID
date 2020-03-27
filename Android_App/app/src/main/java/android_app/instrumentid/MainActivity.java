@@ -144,8 +144,11 @@ public class MainActivity extends AppCompatActivity
                     {
                         //uploadFile.setEnabled(false);
                         TextView responseText = findViewById(R.id.response);
+                        ImageView serverStatus = (ImageView) findViewById(R.id.serverStatus);
+                        serverStatus.setImageResource(R.drawable.server_status_offline);
                         responseText.setText("Failed To Connect To Flask Server");
                         uploadFile.setEnabled(false);
+                        serverConnection();
                     }
                 });
             }
@@ -179,6 +182,8 @@ public class MainActivity extends AppCompatActivity
 
     void postPredictionRequest(String postURL, RequestBody requestBody)
     {
+        TextView responseText = findViewById(R.id.response);
+        responseText.setText("Uploading File To Server...");
 
         OkHttpClient client = new OkHttpClient();
 
@@ -195,7 +200,7 @@ public class MainActivity extends AppCompatActivity
 
                 // Cancel the post on failure.
                 call.cancel();
-
+                serverConnection();
                 e.printStackTrace();
 
                 runOnUiThread(new Runnable()
