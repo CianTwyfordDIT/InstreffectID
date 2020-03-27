@@ -1,7 +1,7 @@
 from flask import Flask, request
 from werkzeug.utils import secure_filename
 import os
-import PredictClass
+from PredictClass import predict
 
 # Create path variable
 path = 'C:/Users/ciant/OneDrive/Documents/Year4/FinalYearProject/InstrumentID/Predict_Audio'
@@ -24,7 +24,8 @@ def uploadFile():
             filePath = path+"/"+secure_filename(file.filename)
             file.save(filePath)
 
-            response = PredictClass.prediction
+            response = predict(filePath)
+            os.remove(filePath)
         else:
             response = "File Upload Failed"
         return response

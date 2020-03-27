@@ -83,14 +83,6 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    String getPredictionURL()
-    {
-        String IPAddress = "192.168.0.25";
-        String port = "5000";
-        String postURL = "http://"+IPAddress+":"+port+"/"+"prediction";
-
-        return postURL;
-    }
     String getUploadURL()
     {
         String IPAddress = "192.168.0.25";
@@ -185,13 +177,14 @@ public class MainActivity extends AppCompatActivity
         {
             String path = data.getData().getPath();
 
-            File file = new File("/sdcard/Music/0356dec7.wav");
+            File file = new File(path);
             String contentType = getMimeType(path);
             String fileName = file.getName();
+            File file2 = new File("/sdcard/Music/"+fileName);
 
             Toast.makeText(this, "File "+fileName+ " selected", Toast.LENGTH_LONG).show();
 
-            RequestBody fileBody = RequestBody.create(MediaType.parse(contentType), file);
+            RequestBody fileBody = RequestBody.create(MediaType.parse(contentType), file2);
 
             RequestBody requestBody = new MultipartBody.Builder()
                     .setType(MultipartBody.FORM)

@@ -4,7 +4,6 @@
 
 
 import os  # Library to interact with operating system
-import time
 
 import pandas as pd  # Library to create and manipulate data frames
 import numpy as np  # Library for array computing
@@ -16,7 +15,7 @@ from Configuration import Configuration  # Contains Configuration class
 
 # Create paths and filename variables
 path = 'C:/Users/ciant/OneDrive/Documents/Year4/FinalYearProject/InstrumentID'
-file = ''.join(os.listdir(path+'/Predict_Audio'))
+Predict_AudioPath = path+'/Predict_Audio'
 picklePath = os.path.join('Saved_Pickle', 'conv.p')  # Create path to conv.p
 
 
@@ -35,9 +34,10 @@ def mostFrequent(list):
 
 # Make predictions on files in specified directory
 def predict(audioDirectory):
+
     prediction = []  # Create list for prediction
 
-    samplingRate, wavFile = wavfile.read(os.path.join(audioDirectory, file))  # Read in file to predict
+    samplingRate, wavFile = wavfile.read(audioDirectory)  # Read in file to predict
 
     # Walk through each audio file
     for i in range(0, wavFile.shape[0]-Configuration.sampleStep, Configuration.sampleStep):
@@ -63,17 +63,3 @@ with open(picklePath, 'rb') as pickleHandle:
     Configuration = pickle.load(pickleHandle)
 
 convModel = load_model(Configuration.modelPath)  # Load saved model into model
-
-fullPath = path+'/Predict_Audio'
-
-
-try:
-    prediction = predict(fullPath)  # Call predict function with directory of file to be analysed
-
-    # Print Result To Console
-    print()
-    print('Predicted Classification of ' + file + ':')
-    print(prediction)
-except:
-    print()
-    print("No File Found in Directory")
