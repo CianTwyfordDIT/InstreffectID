@@ -33,8 +33,7 @@ public class MainActivity extends AppCompatActivity
     String serverIP = "192.168.0.25";
     String serverPort = "5000";
 
-    Button uploadFile;
-    Button playFile;
+    ImageView uploadFile;
     Intent fileIntent;
 
 
@@ -180,8 +179,11 @@ public class MainActivity extends AppCompatActivity
 
     void postPredictionRequest(String postURL, RequestBody requestBody)
     {
-        TextView responseText = findViewById(R.id.response);
+        TextView responseText = findViewById(R.id.fileStatus);
         responseText.setText("Uploading File To Server...");
+
+        TextView predictionText = findViewById(R.id.prediction);
+        predictionText.setText("");
 
         uploadFile.setEnabled(false);
 
@@ -210,7 +212,7 @@ public class MainActivity extends AppCompatActivity
                     public void run()
                     {
                         //uploadFile.setEnabled(false);
-                        TextView responseText = findViewById(R.id.response);
+                        TextView responseText = findViewById(R.id.fileStatus);
                         responseText.setText("File Failed To Upload");
                     }
                 });
@@ -229,10 +231,12 @@ public class MainActivity extends AppCompatActivity
                         {
                             String prediction = response.body().string();
 
-                            Intent predictionIntent = new Intent(MainActivity.this, Prediction.class);
-                            predictionIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                            predictionIntent.putExtra("key", prediction);
-                            MainActivity.this.startActivity(predictionIntent);
+                            TextView responseText = findViewById(R.id.fileStatus);
+                            responseText.setText("");
+
+                            TextView predictionText = findViewById(R.id.prediction);
+                            predictionText.setText("Prediction:\n"+prediction);
+
                             serverConnection();
                         }
                         catch (IOException e)
@@ -274,6 +278,7 @@ public class MainActivity extends AppCompatActivity
                     player.start();
                 }
             });
+
 
             RequestBody fileBody = RequestBody.create(MediaType.parse(contentType), file2);
 
