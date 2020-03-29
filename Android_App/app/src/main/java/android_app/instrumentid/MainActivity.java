@@ -4,6 +4,8 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -32,6 +34,7 @@ public class MainActivity extends AppCompatActivity
     String serverPort = "5000";
 
     Button uploadFile;
+    Button playFile;
     Intent fileIntent;
 
 
@@ -179,6 +182,7 @@ public class MainActivity extends AppCompatActivity
     {
         TextView responseText = findViewById(R.id.response);
         responseText.setText("Uploading File To Server...");
+
         uploadFile.setEnabled(false);
 
         OkHttpClient client = new OkHttpClient();
@@ -226,6 +230,7 @@ public class MainActivity extends AppCompatActivity
                             String prediction = response.body().string();
 
                             Intent predictionIntent = new Intent(MainActivity.this, Prediction.class);
+                            predictionIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NO_ANIMATION);
                             predictionIntent.putExtra("key", prediction);
                             MainActivity.this.startActivity(predictionIntent);
                             serverConnection();
@@ -251,9 +256,24 @@ public class MainActivity extends AppCompatActivity
             File file = new File(path);
             String contentType = getMimeType(path);
             String fileName = file.getName();
-            File file2 = new File("/sdcard/Music/"+fileName);
+            String filePath = "/sdcard/Music/"+fileName;
+            File file2 = new File(filePath);
 
             Toast.makeText(this, "File "+fileName+ " selected", Toast.LENGTH_LONG).show();
+            Button playFile = findViewById(R.id.playFile);
+            playFile.setVisibility(View.VISIBLE);
+            playFile.setText("Play "+fileName);
+
+            final MediaPlayer player = MediaPlayer.create(this, Uri.parse(filePath));
+
+            playFile.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    player.start();
+                }
+            });
 
             RequestBody fileBody = RequestBody.create(MediaType.parse(contentType), file2);
 
