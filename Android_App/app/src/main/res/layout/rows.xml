@@ -1,34 +1,67 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<LinearLayout
+<RelativeLayout
     android:layout_height="match_parent"
     android:layout_width="match_parent"
     android:padding="20dp"
     android:orientation="horizontal"
     android:background="#FFFFFF"
     xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <TextView
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:paddingRight="7dp"
+                android:id="@+id/listFileName"/>
 
-    <TextView
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        android:padding="5dp"
-        android:id="@+id/listFileName"/>
+            <TextView
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:padding="5dp"
+                android:text="-->"
+                android:textSize="15dp"/>
 
-    <TextView
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        android:padding="5dp"
-        android:id="@+id/listPrediction"/>
+            <TextView
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:padding="5dp"
+                android:id="@+id/listPrediction"/>
+        </LinearLayout>
 
-    <TextView
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        android:padding="5dp"
-        android:id="@+id/listDisplayDate"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-    <TextView
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        android:padding="5dp"
-        android:id="@+id/listDisplayTime"/>
+            <TextView
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:padding="5dp"
+                android:text="Predicted on:"
+                android:textSize="15dp"/>
 
-</LinearLayout>
+            <TextView
+                android:id="@+id/listDisplayDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="5dp" />
+
+            <TextView
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:padding="5dp"
+                android:text="at"
+                android:textSize="15dp"/>
+
+            <TextView
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:padding="5dp"
+                android:id="@+id/listDisplayTime"/>
+        </LinearLayout>
+    </LinearLayout>
+</RelativeLayout>

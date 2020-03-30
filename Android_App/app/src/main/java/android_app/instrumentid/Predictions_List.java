@@ -33,6 +33,14 @@ public class Predictions_List extends ListActivity
         db.close();
     }
 
+    @Override
+    public void onBackPressed()
+    {
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        startActivity(intent);
+    }
+
     private void populateListView() {
         Cursor myCursor = db.getAllPredictions();
         String[] columns = new String[]{"file_name", "prediction", "date_created", "time_created"};
