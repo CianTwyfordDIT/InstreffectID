@@ -46,6 +46,7 @@ public class Predictions_List extends ListActivity
         //tell user the list is empty
         if (myCursor.getCount() == 0) {
             Intent intent = new Intent(this, Empty_List.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
             startActivity(intent);
         }
     }

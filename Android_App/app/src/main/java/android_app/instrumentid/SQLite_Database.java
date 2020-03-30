@@ -104,7 +104,7 @@ public class SQLite_Database
                                 KEY_DATE_CREATED,
                                 KEY_TIME_CREATED
                         },
-                null, null, null, null, null);
+                null, null, null, null, KEY_DATE_CREATED+" DESC, "+KEY_TIME_CREATED+" DESC");
     }
 
     public boolean deletePrediction(long rowId)

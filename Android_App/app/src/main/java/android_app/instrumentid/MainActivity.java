@@ -64,6 +64,15 @@ public class MainActivity extends AppCompatActivity
         enableButton();
     }
 
+    @Override
+    public void onBackPressed()
+    {
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_HOME);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+    }
+
     private void enableButton()
     {
         uploadFile.setOnClickListener(new View.OnClickListener()
@@ -85,6 +94,7 @@ public class MainActivity extends AppCompatActivity
             public void onClick(View v)
             {
                 Intent intent = new Intent(MainActivity.this, Predictions_List.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 MainActivity.this.startActivity(intent);
             }
         });

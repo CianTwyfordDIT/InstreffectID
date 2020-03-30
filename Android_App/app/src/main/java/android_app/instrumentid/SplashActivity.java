@@ -43,6 +43,7 @@ public class SplashActivity extends Activity {
                 }
                 finally
                 {
+                    i.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                     startActivity(i); //Go to Main Menu
                     finish();
                 }
