@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity
 
     ImageView uploadFile;
     Intent fileIntent;
-    Button viewLibrary;
+    ImageView viewLibrary;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -211,11 +211,11 @@ public class MainActivity extends AppCompatActivity
 
     void postPredictionRequest(String postURL, RequestBody requestBody)
     {
-        TextView responseText = findViewById(R.id.fileStatus);
+        TextView responseText = findViewById(R.id.prediction);
         responseText.setText("Uploading File To Server...");
 
-        TextView predictionText = findViewById(R.id.prediction);
-        predictionText.setText("");
+        Button playFile = findViewById(R.id.playFile);
+        playFile.setVisibility(View.INVISIBLE);
 
         uploadFile.setEnabled(false);
         uploadFile.setImageAlpha(75);
@@ -244,7 +244,7 @@ public class MainActivity extends AppCompatActivity
                     public void run()
                     {
                         //uploadFile.setEnabled(false);
-                        TextView responseText = findViewById(R.id.fileStatus);
+                        TextView responseText = findViewById(R.id.prediction);
                         responseText.setText("File Failed To Upload");
                     }
                 });
@@ -258,13 +258,16 @@ public class MainActivity extends AppCompatActivity
                     @Override
                     public void run()
                     {
+                        Button playFile = findViewById(R.id.playFile);
+                        playFile.setVisibility(View.VISIBLE);
+
                         uploadFile.setEnabled(true);
                         uploadFile.setImageAlpha(255);
                         try
                         {
                             String prediction = response.body().string();
 
-                            TextView responseText = findViewById(R.id.fileStatus);
+                            TextView responseText = findViewById(R.id.prediction);
                             responseText.setText("");
 
                             TextView predictionText = findViewById(R.id.prediction);
