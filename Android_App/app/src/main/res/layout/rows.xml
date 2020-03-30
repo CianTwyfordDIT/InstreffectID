@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LinearLayout
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:padding="20dp"
+    android:orientation="horizontal"
+    android:background="#FFFFFF"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <TextView
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:padding="5dp"
+        android:id="@+id/listFileName"/>
+
+    <TextView
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:padding="5dp"
+        android:id="@+id/listPrediction"/>
+
+    <TextView
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:padding="5dp"
+        android:id="@+id/listDisplayDate"/>
+
+    <TextView
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:padding="5dp"
+        android:id="@+id/listDisplayTime"/>
+
+</LinearLayout>

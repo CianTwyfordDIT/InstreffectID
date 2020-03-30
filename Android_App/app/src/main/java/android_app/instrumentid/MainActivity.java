@@ -41,6 +41,7 @@ public class MainActivity extends AppCompatActivity
 
     ImageView uploadFile;
     Intent fileIntent;
+    Button viewLibrary;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -74,6 +75,17 @@ public class MainActivity extends AppCompatActivity
                 fileIntent.setType("audio/*"); // File types allowed to be selected
                 startActivityForResult(fileIntent, 10); // Specify which activity returning from
 
+            }
+        });
+
+        viewLibrary = findViewById(R.id.viewLibrary);
+        viewLibrary.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                Intent intent = new Intent(MainActivity.this, Predictions_List.class);
+                MainActivity.this.startActivity(intent);
             }
         });
     }

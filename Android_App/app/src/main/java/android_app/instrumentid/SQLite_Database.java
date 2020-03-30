@@ -2,6 +2,7 @@ package android_app.instrumentid;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
@@ -89,5 +90,37 @@ public class SQLite_Database
         initialValues.put(KEY_DATE_CREATED, String.valueOf(dateCreated));
         initialValues.put(KEY_TIME_CREATED, String.valueOf(timeCreated));
         return db.insert(DATABASE_TABLE, null, initialValues);
+    }
+
+    //Returns all drawings when queried
+    public Cursor getAllPredictions()
+    {
+        return db.query(DATABASE_TABLE, new String[]
+                        {
+                                KEY_ROWID,
+                                KEY_FILE_NAME,
+                                KEY_FILE_PATH,
+                                KEY_PREDICTION,
+                                KEY_DATE_CREATED,
+                                KEY_TIME_CREATED
+                        },
+                null, null, null, null, null);
+    }
+
+    public boolean deletePrediction(long rowId)
+    {
+        return db.delete(DATABASE_TABLE, KEY_ROWID +
+                "=" + rowId, null) > 0;
+    }
+
+    public String getFilePath(long rowId)
+    {
+        String s;
+        open();
+        Cursor c = db.rawQuery("SELECT file_path FROM Predictions WHERE _id=?", new String[] {rowId+""}, null);
+        c.moveToFirst();
+        s=c.getString(c.getColumnIndex("file_path"));
+        db.close();
+        return s;
     }
 }
