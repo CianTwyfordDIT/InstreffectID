@@ -19,6 +19,10 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;
@@ -30,21 +34,25 @@ import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity
 {
+    File globalFile;
+    public SQLite_Database db;
     String serverIP = "192.168.0.25";
     String serverPort = "5000";
 
     ImageView uploadFile;
     Intent fileIntent;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        db = new SQLite_Database(this);
         serverConnection();
 
         uploadFile = findViewById(R.id.uploadFile);
+        uploadFile.setEnabled(false);
+        uploadFile.setImageAlpha(75);
 
         if(ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
         {
@@ -145,6 +153,7 @@ public class MainActivity extends AppCompatActivity
                         serverStatus.setImageResource(R.drawable.server_status_offline);
                         responseText.setText("Failed To Connect To Server");
                         uploadFile.setEnabled(false);
+                        uploadFile.setImageAlpha(75);
                         serverConnection();
                     }
                 });
@@ -165,6 +174,7 @@ public class MainActivity extends AppCompatActivity
                             serverStatus.setImageResource(R.drawable.server_status_online);
 
                             uploadFile.setEnabled(true);
+                            uploadFile.setImageAlpha(255);
                             responseText.setText(response.body().string());
                         }
                         catch (IOException e)
@@ -186,7 +196,7 @@ public class MainActivity extends AppCompatActivity
         predictionText.setText("");
 
         uploadFile.setEnabled(false);
-
+        uploadFile.setImageAlpha(75);
         OkHttpClient client = new OkHttpClient();
 
         Request request = new Request.Builder()
@@ -227,6 +237,7 @@ public class MainActivity extends AppCompatActivity
                     public void run()
                     {
                         uploadFile.setEnabled(true);
+                        uploadFile.setImageAlpha(255);
                         try
                         {
                             String prediction = response.body().string();
@@ -236,6 +247,10 @@ public class MainActivity extends AppCompatActivity
 
                             TextView predictionText = findViewById(R.id.prediction);
                             predictionText.setText("Prediction:\n"+prediction);
+
+                            db.open();
+                            Long rowID = addRow(prediction);
+                            db.close();
 
                             serverConnection();
                         }
@@ -268,6 +283,8 @@ public class MainActivity extends AppCompatActivity
             playFile.setVisibility(View.VISIBLE);
             playFile.setText("Play "+fileName);
 
+            globalFile = file2;
+
             final MediaPlayer player = MediaPlayer.create(this, Uri.parse(filePath));
 
             playFile.setOnClickListener(new View.OnClickListener()
@@ -299,5 +316,26 @@ public class MainActivity extends AppCompatActivity
         String extension = MimeTypeMap.getFileExtensionFromUrl(path);
 
         return MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+    }
+
+    //Insert statement to insert row into table. Row Id is returned
+    public long addRow(String prediction)
+    {
+        long id;
+        String fileName = globalFile.getName();
+        String filePath = globalFile.getAbsolutePath();
+        String formattedDate =
+                new SimpleDateFormat("dd-MMM-yyyy", Locale.getDefault()).format(new Date());
+
+        String formattedTime =
+                new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
+
+        id = db.insertPrediction(
+                fileName,
+                filePath,
+                prediction,
+                formattedDate,
+                formattedTime);
+        return id;
     }
 }

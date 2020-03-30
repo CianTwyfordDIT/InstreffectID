@@ -1,5 +1,6 @@
 package android_app.instrumentid;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -20,7 +21,7 @@ public class SQLite_Database
 
     // SQL statement to create the database. RowId auto incremented and drawing title must be unique.
     private static final String DATABASE_CREATE =
-            "create table Drawings (_id integer primary key autoincrement," +
+            "create table Predictions (_id integer primary key autoincrement," +
                     "file_name text not null unique, " +
                     "file_path text not null, " +
                     "prediction text not null, " +
@@ -76,5 +77,17 @@ public class SQLite_Database
     public void close()
     {
         DBHelper.close();
+    }
+
+    //Inserts row into table
+    public long insertPrediction (String fileName, String filePath, String prediction, String dateCreated, String timeCreated)
+    {
+        ContentValues initialValues = new ContentValues();
+        initialValues.put(KEY_FILE_NAME, fileName);
+        initialValues.put(KEY_FILE_PATH, filePath);
+        initialValues.put(KEY_PREDICTION, prediction);
+        initialValues.put(KEY_DATE_CREATED, String.valueOf(dateCreated));
+        initialValues.put(KEY_TIME_CREATED, String.valueOf(timeCreated));
+        return db.insert(DATABASE_TABLE, null, initialValues);
     }
 }
