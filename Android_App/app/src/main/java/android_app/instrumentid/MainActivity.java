@@ -171,11 +171,13 @@ public class MainActivity extends AppCompatActivity
                     {
                         //uploadFile.setEnabled(false);
                         TextView responseText = findViewById(R.id.response);
-                        ImageView serverStatus = (ImageView) findViewById(R.id.serverStatus);
+                        ImageView serverStatus = findViewById(R.id.serverStatus);
+                        TextView prediction = findViewById(R.id.prediction);
                         serverStatus.setImageResource(R.drawable.server_status_offline);
                         responseText.setText("Failed To Connect To Server");
                         uploadFile.setEnabled(false);
                         uploadFile.setImageAlpha(75);
+                        prediction.setText("Server Connection Required \nFor File Upload");
                         serverConnection();
                     }
                 });
@@ -194,6 +196,12 @@ public class MainActivity extends AppCompatActivity
                         {
                             ImageView serverStatus = (ImageView) findViewById(R.id.serverStatus);
                             serverStatus.setImageResource(R.drawable.server_status_online);
+                            TextView prediction = findViewById(R.id.prediction);
+
+                            if(prediction.getText().equals("Server Connection Required \nFor File Upload"))
+                            {
+                                prediction.setText("Upload File");
+                            }
 
                             uploadFile.setEnabled(true);
                             uploadFile.setImageAlpha(255);
@@ -303,7 +311,7 @@ public class MainActivity extends AppCompatActivity
             String filePath = "/sdcard/Music/"+fileName;
             File file2 = new File(filePath);
 
-            Toast.makeText(this, "File "+fileName+ " selected", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "File "+fileName+ " selected", Toast.LENGTH_SHORT).show();
             Button playFile = findViewById(R.id.playFile);
             playFile.setVisibility(View.VISIBLE);
             playFile.setText("Play "+fileName);
@@ -355,12 +363,16 @@ public class MainActivity extends AppCompatActivity
         String formattedTime =
                 new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
 
+        String formattedAbsTime =
+                new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());
+
         id = db.insertPrediction(
                 fileName,
                 filePath,
                 prediction,
                 formattedDate,
-                formattedTime);
+                formattedTime,
+                formattedAbsTime);
         return id;
     }
 }

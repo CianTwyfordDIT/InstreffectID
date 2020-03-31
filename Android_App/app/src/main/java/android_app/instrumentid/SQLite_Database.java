@@ -19,6 +19,7 @@ public class SQLite_Database
     private static final String KEY_PREDICTION = "prediction";
     private static final String KEY_DATE_CREATED = "date_created";
     private static final String KEY_TIME_CREATED = "time_created";
+    private static final String KEY_TIME_CREATED_ABS = "time_created_abs";
 
     // SQL statement to create the database. RowId auto incremented and drawing title must be unique.
     private static final String DATABASE_CREATE =
@@ -27,7 +28,8 @@ public class SQLite_Database
                     "file_path text not null, " +
                     "prediction text not null, " +
                     "date_created text not null, " +
-                    "time_created text not null);";
+                    "time_created text not null, " +
+                    "time_created_abs text not null);";
 
     private final Context context;
     private DatabaseHelper DBHelper;
@@ -75,13 +77,8 @@ public class SQLite_Database
         }
     }
 
-    public void close()
-    {
-        DBHelper.close();
-    }
-
     //Inserts row into table
-    public long insertPrediction (String fileName, String filePath, String prediction, String dateCreated, String timeCreated)
+    public long insertPrediction (String fileName, String filePath, String prediction, String dateCreated, String timeCreated, String timeCreatedAbs)
     {
         ContentValues initialValues = new ContentValues();
         initialValues.put(KEY_FILE_NAME, fileName);
@@ -89,6 +86,7 @@ public class SQLite_Database
         initialValues.put(KEY_PREDICTION, prediction);
         initialValues.put(KEY_DATE_CREATED, String.valueOf(dateCreated));
         initialValues.put(KEY_TIME_CREATED, String.valueOf(timeCreated));
+        initialValues.put(KEY_TIME_CREATED_ABS, String.valueOf(timeCreatedAbs));
         return db.insert(DATABASE_TABLE, null, initialValues);
     }
 
@@ -102,9 +100,10 @@ public class SQLite_Database
                                 KEY_FILE_PATH,
                                 KEY_PREDICTION,
                                 KEY_DATE_CREATED,
-                                KEY_TIME_CREATED
+                                KEY_TIME_CREATED,
+                                KEY_TIME_CREATED_ABS
                         },
-                null, null, null, null, KEY_DATE_CREATED+" DESC, "+KEY_TIME_CREATED+" DESC");
+                null, null, null, null, KEY_DATE_CREATED+" DESC, "+KEY_TIME_CREATED_ABS+" DESC");
     }
 
     public boolean deletePrediction(long rowId)
@@ -112,6 +111,12 @@ public class SQLite_Database
         return db.delete(DATABASE_TABLE, KEY_ROWID +
                 "=" + rowId, null) > 0;
     }
+
+    public void deleteAllPredictions()
+    {
+        db.execSQL("delete from "+ DATABASE_TABLE);
+    }
+
 
     public String getFilePath(long rowId)
     {
@@ -122,5 +127,21 @@ public class SQLite_Database
         s=c.getString(c.getColumnIndex("file_path"));
         db.close();
         return s;
+    }
+
+    public String getFileName(long rowId)
+    {
+        String s;
+        open();
+        Cursor cursor = db.rawQuery("SELECT file_name FROM Predictions WHERE _id=?", new String[] {rowId+""}, null);
+        cursor.moveToFirst();
+        s=cursor.getString(cursor.getColumnIndex("file_name"));
+        db.close();
+        return s;
+    }
+
+    public void close()
+    {
+        DBHelper.close();
     }
 }

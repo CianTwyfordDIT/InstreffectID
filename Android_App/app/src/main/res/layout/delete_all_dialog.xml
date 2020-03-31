@@ -8,14 +8,14 @@
     android:background="#FFFFFF">
 
     <Button
-        android:id="@+id/deleteButton2"
+        android:id="@+id/deleteAllButton"
         android:layout_width="120dp"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
-        android:text="Delete" />
+        android:text="Delete All" />
 
     <Button
-        android:id="@+id/cancelButton2"
+        android:id="@+id/cancelButton"
         android:layout_width="120dp"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
