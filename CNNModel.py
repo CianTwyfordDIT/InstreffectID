@@ -15,8 +15,8 @@ from Configuration import Configuration  # Contains Configuration class
 from tqdm import tqdm  # Library to graph any iterable in python eg. making progress bar
 from python_speech_features import mfcc  # Audio library for MFCC features
 # Keras library for convolutional layer and other functions
-from keras.layers import Conv2D, MaxPool2D, Flatten, LSTM
-from keras.layers import Dropout, Dense, TimeDistributed
+from keras.layers import Conv2D, MaxPool2D, Flatten  # Use of various neural network layers
+from keras.layers import Dropout, Dense
 from keras.utils import to_categorical  # Use for categorical cross entropy
 from keras.models import Sequential  # Model for linear stacking of layers
 from keras.callbacks import ModelCheckpoint  # Saving model from Keras to load up later and make predictions
@@ -100,7 +100,7 @@ def generateFeatures():
 # Convolutional neural network model
 def ConvNeuralNetworkModel():
     convModel = Sequential()  # Linear stack of layers
-    # Add convolutional layers to create a covolutional kernel
+    # Add convolutional layers to create a covolutional filter
     # and learn new features about data
     # Increase number of filters for each layer to get more specific as
     # data gets convolved down through each layer
@@ -111,10 +111,10 @@ def ConvNeuralNetworkModel():
 
     # Add pooling layer
     convModel.add(MaxPool2D((2, 2)))
-    convModel.add(Dropout(0, 5))
+    convModel.add(Dropout(0, 5))  # Reduce chance of overfitting model
     convModel.add(Flatten())  # Flatten output of pooling to one dimension
 
-    # Add dense layers - gradually pull down layers
+    # Add neural network dense layers - gradually pull down layers
     convModel.add(Dense(128, activation='relu'))
     convModel.add(Dense(64, activation='relu'))
     convModel.add(Dense(10, activation='softmax'))

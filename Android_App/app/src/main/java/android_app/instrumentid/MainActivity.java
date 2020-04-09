@@ -283,6 +283,10 @@ public class MainActivity extends AppCompatActivity
 
                             db.open();
                             Long rowID = addRow(prediction);
+                            if (rowID == -1)
+                            {
+                                Toast.makeText(MainActivity.this, "File not added to library. Already exists", Toast.LENGTH_LONG).show();
+                            }
                             db.close();
 
                             serverConnection();

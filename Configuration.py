@@ -5,7 +5,7 @@
 import os
 
 
-# Configuration class to initialise constants for neural network model to
+# Configuration file to initialise constants for neural network model to
 # avoid hard coding
 class Configuration:
     # Number of triangular filters, number of MFCC features, length of signal to calculate
