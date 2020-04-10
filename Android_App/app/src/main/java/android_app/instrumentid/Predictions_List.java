@@ -36,6 +36,7 @@ public class Predictions_List extends ListActivity
     private AlertDialog dialogDP; //Delete/Play
     private AlertDialog dialogS; //Sure
     private AlertDialog dialogDA; //Delete All
+    private AlertDialog dialogFG; //File Gone
     ImageView delete; //Variable for associated screen layout
 
     @Override
@@ -211,15 +212,91 @@ public class Predictions_List extends ListActivity
         String filePath = db.getFilePath(id);
         db.close();
 
-        //Play file when "PLAY" is selected
         final MediaPlayer player = MediaPlayer.create(this, Uri.parse(filePath));
+
+        //Play file when "PLAY" is selected
         playButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View view1)
             {
-                player.start();
-                dialogDP.dismiss();
+                //Check to see if file still exists at path
+                if(player == null)
+                {
+                    Toast.makeText(Predictions_List.this, "Cannot play file. File deleted or moved", Toast.LENGTH_LONG).show();
+                    currentAlertDialog = new AlertDialog.Builder(Predictions_List.this); //Create new dialog object
+                    View view4 = getLayoutInflater().inflate(R.layout.filepath_gone_dialog, null); //Set associated screen layout
+
+                    currentAlertDialog.setView(view4);
+                    dialogFG = currentAlertDialog.create();
+                    dialogFG.setTitle("Remove deleted or moved file from library?"); //Set title of dialog box
+                    dialogFG.show(); //Show dialog box
+
+                    //If delete is clicked, another dialog box will appear to confirm
+                    Button delete = view4.findViewById(R.id.deleteButton3);
+                    delete.setOnClickListener(new View.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(View view)
+                        {
+                            View view2 = getLayoutInflater().inflate(R.layout.sure_dialog, null);
+
+                            currentAlertDialog.setView(view2);
+                            dialogS = currentAlertDialog.create();
+                            dialogS.setTitle("Sure to Delete?");
+                            dialogS.show();
+
+                            Button cancel = view2.findViewById(R.id.cancelButton2);
+                            cancel.setOnClickListener(new View.OnClickListener()
+                            {
+                                @Override
+                                public void onClick(View view)
+                                {
+                                    dialogDP.dismiss();
+                                    dialogS.dismiss();
+                                }
+                            });
+
+                            Button delete2 = view2.findViewById(R.id.deleteButton2);
+                            delete2.setOnClickListener(new View.OnClickListener()
+                            {
+                                @Override
+                                public void onClick(View view)
+                                {
+                                    db.open();
+                                    //Call to get file name from database to display toast
+                                    String fileName = db.getFileName(id);
+                                    Toast.makeText(Predictions_List.this, "File "+fileName+ " deleted from library", Toast.LENGTH_LONG).show();
+                                    db.close();
+                                    db.open();
+                                    //Call to delete prediction row
+                                    db.deletePrediction(id);
+                                    populateListView(); //Automatically refresh library list
+                                    db.close();
+                                    dialogDP.dismiss();
+                                    dialogS.dismiss();
+                                    dialogFG.dismiss();
+                                }
+                            });
+                        }
+                    });
+
+                    //If cancel is clicked, hide dialog box
+                    Button cancel = view4.findViewById(R.id.cancelButton2);
+                    cancel.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            dialogFG.dismiss();
+                            dialogDP.dismiss();
+                        }
+                    });
+                }
+                //Else if the file still exists at the original location, play the audio
+                else
+                    {
+                    player.start();
+                    dialogDP.dismiss();
+                }
             }
         });
     }

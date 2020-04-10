@@ -360,45 +360,51 @@ public class MainActivity extends AppCompatActivity
         if (requestCode == 10 && resultCode == RESULT_OK)
         {
             String path = data.getData().getPath(); //Get the path for selected file
-
             File file = new File(path); //Create new file object with path of file selected
             String contentType = getMimeType(path); //Call method with path to file
             String fileName = file.getName(); //Get the name of the file from the file object
-
-            //Create another file object with path to Music directory on device
-            String filePath = "/sdcard/Music/"+fileName;
-            File file2 = new File(filePath);
-
-            Toast.makeText(this, "File "+fileName+ " selected", Toast.LENGTH_SHORT).show(); //Toast displaying file name selection to user
-            Button playFile = findViewById(R.id.playFile); //Bind with button from screen
-            playFile.setVisibility(View.VISIBLE); //Make button visible
-            playFile.setText("Play "+fileName); //Set button text to filename
-
-            globalFile = file2; //Put file into global variable to be used in addRow() function
-
-            //Create a media player object to play file when playFile button is clicked
-            final MediaPlayer player = MediaPlayer.create(this, Uri.parse(filePath));
-            playFile.setOnClickListener(new View.OnClickListener()
+            if(contentType == null)
             {
-                @Override
-                public void onClick(View v)
-                {
-                    player.start();
-                }
-            });
+                Toast.makeText(this, "Invalid File Selected", Toast.LENGTH_LONG).show(); //Toast displaying file name selection to user
+            }
+            else if(contentType.equals("audio/x-wav"))
+            {
+                //Create another file object with path to Music directory on device
+                String filePath = "/sdcard/Music/" + fileName;
+                File file2 = new File(filePath);
 
-            //Create a body containing the file to be sent to the server
-            RequestBody fileBody = RequestBody.create(MediaType.parse(contentType), file2);
+                Toast.makeText(this, "File " + fileName + " selected", Toast.LENGTH_SHORT).show(); //Toast displaying file name selection to user
+                Button playFile = findViewById(R.id.playFile); //Bind with button from screen
+                playFile.setVisibility(View.VISIBLE); //Make button visible
+                playFile.setText("Play " + fileName); //Set button text to filename
 
-            RequestBody requestBody = new MultipartBody.Builder()
-                    .setType(MultipartBody.FORM)
-                    .addFormDataPart("type", contentType)
-                    .addFormDataPart("uploadFile", fileName, fileBody)
-                    .build();
+                globalFile = file2; //Put file into global variable to be used in addRow() function
 
-            String postURL = getUploadURL(); //Get URL for upload file method on server
+                //Create a media player object to play file when playFile button is clicked
+                final MediaPlayer player = MediaPlayer.create(this, Uri.parse(filePath));
+                playFile.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        player.start();
+                    }
+                });
 
-            postPredictionRequest(postURL, requestBody); //Pass URL and body to method
+                //Create a body containing the file to be sent to the server
+                RequestBody fileBody = RequestBody.create(MediaType.parse(contentType), file2);
+                RequestBody requestBody = new MultipartBody.Builder()
+                        .setType(MultipartBody.FORM)
+                        .addFormDataPart("type", contentType)
+                        .addFormDataPart("uploadFile", fileName, fileBody)
+                        .build();
+
+                String postURL = getUploadURL(); //Get URL for upload file method on server
+
+                postPredictionRequest(postURL, requestBody); //Pass URL and body to method
+            }
+            else
+            {
+                Toast.makeText(this, "Invalid File Selected", Toast.LENGTH_LONG).show(); //Toast displaying file name selection to user
+            }
         }
     }
 
