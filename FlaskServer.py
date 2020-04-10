@@ -4,8 +4,8 @@
 # The file is then predicted with the imported PredictClass
 # and the resulting prediction is returned to the client.
 
-from flask import Flask, request
-from werkzeug.utils import secure_filename
+from flask import Flask, request  # Library for micro webframe and retrieving data from POST
+from werkzeug.utils import secure_filename  # Retrieve filename from file in POST
 import os  # Library to interact with operating system
 from PredictClass import predict  # Contains PredictClass
 

@@ -1,5 +1,15 @@
-package android_app.instrumentid;
+/* This class is the setup for the local
+database to be stored on the user's device.
+It contains methods for creating the database,
+adding a row, deleting a row, deleting all rows
+and viewing all rows.
 
+Associated Screen Layout: None
+*/
+
+package android_app.instrumentid; //Project package
+
+//Import Android functions
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -9,7 +19,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class SQLite_Database
 {
 
-    // database columns
+    //Database columns
     private static final int DATABASE_VERSION = 1;
     private static final String DATABASE_NAME = "PredictionDatabase";
     private static final String KEY_ROWID = "_id";
@@ -21,7 +31,7 @@ public class SQLite_Database
     private static final String KEY_TIME_CREATED = "time_created";
     private static final String KEY_TIME_CREATED_ABS = "time_created_abs";
 
-    // SQL statement to create the database. RowId auto incremented and drawing title must be unique.
+    //SQL statement to create the database. RowId auto incremented and file_name must be unique.
     private static final String DATABASE_CREATE =
             "create table Predictions (_id integer primary key autoincrement," +
                     "file_name text not null unique, " +
@@ -38,7 +48,6 @@ public class SQLite_Database
     // Constructor
     public SQLite_Database(Context ctx)
     {
-        //
         this.context = ctx;
         DBHelper = new DatabaseHelper(context);
     }
@@ -49,18 +58,17 @@ public class SQLite_Database
         return this;
     }
 
-    // nested dB helper class
+    //Nested dB helper class
     private static class DatabaseHelper extends SQLiteOpenHelper
     {
-        //
         DatabaseHelper(Context context)
         {
             super(context, DATABASE_NAME, null, DATABASE_VERSION);
         }
 
 
+        //Create database on first open
         @Override
-        //
         public void onCreate(SQLiteDatabase db)
         {
 
@@ -68,12 +76,10 @@ public class SQLite_Database
         }
 
         @Override
-        //
         public void onUpgrade(SQLiteDatabase db, int oldVersion,
                               int newVersion)
         {
-            // dB structure change..
-
+            //DB structure change..
         }
     }
 
@@ -90,7 +96,8 @@ public class SQLite_Database
         return db.insert(DATABASE_TABLE, null, initialValues);
     }
 
-    //Returns all drawings when queried
+    //Returns all predictions when queried, ordered by the date and time added,
+    //most recent displayed first and descending
     public Cursor getAllPredictions()
     {
         return db.query(DATABASE_TABLE, new String[]
@@ -106,18 +113,20 @@ public class SQLite_Database
                 null, null, null, null, KEY_DATE_CREATED+" DESC, "+KEY_TIME_CREATED_ABS+" DESC");
     }
 
+    //Delete a specified prediction row from database
     public boolean deletePrediction(long rowId)
     {
         return db.delete(DATABASE_TABLE, KEY_ROWID +
                 "=" + rowId, null) > 0;
     }
 
+    //Delete all rows in database
     public void deleteAllPredictions()
     {
         db.execSQL("delete from "+ DATABASE_TABLE);
     }
 
-
+    //Return the file path of the specified prediction row
     public String getFilePath(long rowId)
     {
         String s;
@@ -129,6 +138,7 @@ public class SQLite_Database
         return s;
     }
 
+    //Return the file name of the specified prediction row
     public String getFileName(long rowId)
     {
         String s;
@@ -140,6 +150,7 @@ public class SQLite_Database
         return s;
     }
 
+    //Close database
     public void close()
     {
         DBHelper.close();

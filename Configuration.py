@@ -2,7 +2,7 @@
 # needed for various functions in the application.
 
 
-import os
+import os  # Library to interact with operating system
 
 
 # Configuration file to initialise constants for neural network model to

@@ -64,7 +64,7 @@ def generateFeatures():
     # Use tqdm to graphically represent progress
     for _ in tqdm(range(numSamples)):
         randomClass = np.random.choice(classDistrib.index, p=probDistrib)  # Choose random instrument class based on probability distribution
-        file = np.random.choice(df[df.label == randomClass].index)  # Choose random audio file based on randomly generated classs
+        file = np.random.choice(df[df.label == randomClass].index)  # Choose random audio file based on randomly generated class
         samplingRate, wavFile = wavfile.read('Clean_Audio/'+file)  # Read in randomly selected file from clean directory
         label = df.at[file, 'label']  # Get file label
         randomIndex = np.random.randint(0, wavFile.shape[0] - Configuration.sampleStep)  # Randomly get index to start sampling at based on length of audio file
